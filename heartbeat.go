@@ -74,9 +74,9 @@ func heartbeat(mgr *worker.Manager) error {
                 _, err := Beat(c)
 
                 if err != nil {
+                        panic(err)
                         return err
                 }
-                handleEvent(Shutdown, mgr)
                 return nil
         })
 
@@ -84,7 +84,7 @@ func heartbeat(mgr *worker.Manager) error {
                 panic(err)
                 os.Exit(0)
         }
-
+        handleEvent(Shutdown, mgr)
         return nil
 }
 
@@ -138,12 +138,8 @@ func main() {
 
         go func() {
 		for {
-			if quit {
-                                fmt.Println("Success")
-				os.Exit(0)
-                        }
                         heartbeat(mgr)
-			time.Sleep(1 * time.Second)
+			time.Sleep(15 * time.Second)
 		}
 	}()
         
