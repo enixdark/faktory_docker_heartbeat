@@ -31,7 +31,7 @@ spec:
             - name: FAKTORY_URL
               value: {{ default .Values.config.faktoryUrl | quote }} 
           command: ["/faktory"]
-          args: ["-b", ":7419" ,"-w", ":7420", "-e", "production"]
+          args: ["-b", ":7419" ,"-w", ":7420", "-e", {{ default .Values.config.env | quote }} ]
           ports:
             - name: http
               containerPort: 7420
@@ -39,11 +39,11 @@ spec:
             - name: tcp
               containerPort: 7419
               protocol: TCP
-          livenessProbe:
-            exec:
-              command:
-                - ./heartbeat
-            initialDelaySeconds: 30
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - /heartbeat -l debug
+          #   initialDelaySeconds: 5
           # readinessProbe:
           #   httpGet:
           #     path: /

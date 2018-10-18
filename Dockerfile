@@ -1,12 +1,12 @@
 #--------------------------------------
-# Stage: Building heartbirth
+# Stage: Building heartbeat
 #--------------------------------------
 FROM golang:alpine
 
 RUN mkdir -p /usr/local/go/src/github.com/enixdark/faktory_docker_heartbeat
 ADD . /usr/local/go/src/github.com/enixdark/faktory_docker_heartbeat
 WORKDIR /usr/local/go/src/github.com/enixdark/faktory_docker_heartbeat
-RUN go build -o heartbirt .
+RUN go build -o heartbeat 
 
 #--------------------------------------
 # Stage: Packaging App
@@ -14,7 +14,7 @@ RUN go build -o heartbirt .
 FROM contribsys/faktory:latest
 
 VOLUME /app
-COPY --from=0 /usr/local/go/src/github.com/enixdark/faktory_docker_heartbeat/heartbirt /
+COPY --from=0 /usr/local/go/src/github.com/enixdark/faktory_docker_heartbeat/heartbeat /
 
 EXPOSE 7419 
 EXPOSE 7420

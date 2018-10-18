@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: cqshinn92/faktory_heartbeat
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
@@ -58,8 +58,8 @@ affinity: {}
 
 config:
   env: production
-  faktoryTogoUrl: tcp://quandc@127.0.0.1:7419"
-  faktoryUrl: tcp://quandc@127.0.0.1:7419"
+  faktoryTogoUrl: tcp://:quandc@127.0.0.1:7419
+  faktoryUrl: tcp://:quandc@127.0.0.1:7419
   faktoryPassword: quandc
   
 

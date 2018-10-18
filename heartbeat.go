@@ -4,7 +4,6 @@ import (
         "fmt"
         "log"
         "os"
-        "net/url"
         "time"
         util "github.com/enixdark/faktory_docker_heartbeat/util"
         cli "github.com/enixdark/faktory_docker_heartbeat/cli"
@@ -75,6 +74,7 @@ func heartbeat(mgr *worker.Manager) error {
 
                 if err != nil {
                         panic(err)
+                        util.Debugf("error")
                         return err
                 }
                 return nil
@@ -82,6 +82,7 @@ func heartbeat(mgr *worker.Manager) error {
 
         if err != nil {
                 panic(err)
+                util.Debugf("error")
                 os.Exit(0)
         }
         handleEvent(Shutdown, mgr)
@@ -91,44 +92,10 @@ func heartbeat(mgr *worker.Manager) error {
 
 
 func main() {
-        var err error
-        // var client *faktory.Client
+
         log.SetFlags(0)
         opts := cli.ParseArguments()
         util.InitLogger(opts.LogLevel)
-
-        _, ok := os.LookupEnv("FAKTORY_URL")
-
-        if ok {
-                _, err = faktory.Open()
-                if err != nil {
-                        fmt.Errorf("error")
-                        os.Exit(0)
-                }
-        } else {
-                
-                util.Debugf("Options: %v", opts) 
-                uri, err := url.Parse(opts.Uri)
-
-                if err != nil {
-                        fmt.Errorf("error")
-                        os.Exit(0)
-                }
-                
-                server := faktory.Server{}
-
-                server.Network = uri.Scheme
-                server.Address = fmt.Sprintf("%s:%s", uri.Hostname(), uri.Port())
-                if uri.User != nil {
-                        server.Password, _ = uri.User.Password()
-                }
-                _, err = server.Open()  
-                if err != nil {
-                        fmt.Errorf("error")
-                        os.Exit(0)
-                }
-
-        }
 
         mgr := worker.NewManager()
         var quit bool
@@ -142,7 +109,6 @@ func main() {
 			time.Sleep(15 * time.Second)
 		}
 	}()
-        
 	mgr.Run()
 
 }
