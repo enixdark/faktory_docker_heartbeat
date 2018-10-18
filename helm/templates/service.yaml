@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "faktory.fullname" . }}
+  labels:
+    app: {{ include "faktory.name" . }}
+    chart: {{ include "faktory.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.ui_port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: tcp
+  selector:
+    app: {{ include "faktory.name" . }}
+    release: {{ .Release.Name }}

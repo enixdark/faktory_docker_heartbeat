@@ -1,0 +1,64 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "faktory.fullname" . }}
+  labels:
+    app: {{ include "faktory.name" . }}
+    chart: {{ include "faktory.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "faktory.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "faktory.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: FAKTORY_PASSWORD
+              value: {{ default .Values.config.faktoryPassword | quote }}
+            - name: FAKTORYTOGO_URL
+              value: {{ default .Values.config.faktoryTogoUrl | quote }}
+            - name: FAKTORY_URL
+              value: {{ default .Values.config.faktoryUrl | quote }} 
+          command: ["/faktory"]
+          args: ["-b", ":7419" ,"-w", ":7420", "-e", "production"]
+          ports:
+            - name: http
+              containerPort: 7420
+              protocol: TCP
+            - name: tcp
+              containerPort: 7419
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - ./heartbeat
+            initialDelaySeconds: 30
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
